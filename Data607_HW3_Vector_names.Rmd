@@ -1,0 +1,128 @@
+---
+title: "Data607 HW3 Vector Names"
+author: "Ritesh Lohiya"
+date: "February 16, 2018"
+output: html_document
+---
+
+Please deliver links to an R Markdown file (in GitHub and rpubs.com) with solutions to problems 3 and 4 from chapter 8 of Automated Data Collection in R.  Problem 9 is extra credit.  You may work in a small group, but please submit separately with names of all group participants in your submission.
+
+Here is the referenced code for the introductory example in #3:
+
+ raw.data <-"555-1239Moe Szyslak(636) 555-0113Burns, C. Montgomery555-6542Rev. Timothy Lovejoy555 8904Ned Flanders636-555-3226Simpson, Homer5553642Dr. Julius Hibbert"
+ 
+```{r}
+library(stringr)
+```
+
+3. Copy the introductory example. The vector name stores the extracted names.
+
+```{r}
+raw.data <-"555-1239Moe Szyslak(636) 555-0113Burns, C. Montgomery555-6542Rev. Timothy Lovejoy555 8904Ned Flanders636-555-3226Simpson, Homer5553642Dr. Julius Hibbert"
+```
+
+```{r}
+raw_names <- unlist(str_extract_all(raw.data, "[[:alpha:]., ]{2,}"))
+raw_names
+```
+
+a.Use the tools of this chapter to rearrange the vector so that all elements conform to the standard first_name last_name.
+
+First remove the tittles:
+
+```{r}
+no_title_names <- str_trim(sub("[A-Za-z]{1,}\\.","",raw_names))
+no_title_names
+```
+
+Reverse the last name and first name:
+
+```{r}
+real_name <- sub("(\\w+),\\s+(\\w+)","\\2 \\1", no_title_names )
+real_name
+```
+
+b. Construct a logical vector indicating whether a character has a title (i.e., Rev. and Dr.).
+
+```{r}
+title <- str_detect(raw_names, "[[:alpha:]]{2,}\\.")
+title
+```
+
+```{r}
+raw_names[title == TRUE]
+```
+
+
+c. Construct a logical vector indicating whether a character has a second name.
+
+```{r}
+second_name <- str_detect(raw_names, "[A-Z]\\.{1}")
+second_name
+```
+
+```{r}
+raw_names[second_name == TRUE]
+```
+
+4. Describe the types of strings that conform to the following regular expressions and construst an example that is matched by the regular expression.
+
+a. [0-9]+\\$:
+Matches string patterns comprising 0-9 digits one or more times followed by $ sign only.
+
+```{r}
+x <- c("1$", "153$", "$123", "abc1$", "12345", "abc9$2", "we are having$45$ fun$35$")
+a <- unlist(str_extract_all(x,"[0-9]+\\$"))
+a
+```
+
+b. \\b[a-z]{1,4}\\b:
+Matchs words having between one and four lower-case characters only.
+
+```{r}
+t <- "Iam studying at99 cuny. I work for10 CTS. i like playing wit$ my son. My son's name is Arnav ."
+b <- unlist(str_extract_all(t, "\\b[a-z]{1,4}\\b"))
+b
+```
+Note: Its treating apostrophe as separator.
+
+c. ".*?\\.txt$":
+Matches any string that ends in ".txt".
+
+```{r}
+y <- c("Iam writing my output to a .txt file", ".txt", "i have a txt file", ".txtfile", "All .txt's are in a folder", "no file", "100.txt", "5txt files", "I have kept my records in a file that is .txt")
+c <- unlist(str_extract_all(y, ".*?\\.txt$"))
+c
+```
+
+d.\\d{2}/\\d{2}/\\d{4}:
+Matches strings with 2 digits, then "/", then 2 more digits, then one more "/", and then 4 digits
+
+```{r}
+p <- c("03/12/2008", "4/09/1979","04/20/59","03/09/2008", "1a/2b/2001", "12202008", "aa/bb/cccc", "02/16/2018", "aaa12/12/2008", "bbbb/03/12/2020cccc")
+d <- unlist(str_extract_all(p,"\\d{2}/\\d{2}/\\d{4}"))
+d
+```
+
+e. "<(.+?)>.+?</\\1>:
+Matches the start tag and text following that and then end tag. \1 means reference to the first segment again. This can be used for html.
+
+```{r}
+z <-c("<d> The superbowl was very exciting.</d>.", "<b> I watched <it on </tv/>", "The score was <41> eagles and <32> patriots")
+e <- unlist(str_extract_all(z, "<(.+?)>.+?</\\1>"))
+e
+```
+
+
+9. The following code hides a secret message. Crack it with R and regular expressions. Hint Some of the characters are more revealing than others!
+
+```{r}
+secret_message <- "clcopCow1zmstc0d87wnkig7OvdicpNuggvhryn92Gjuwczi8hqrfpRxs5Aj5dwpn0TanwoUwisdij7Lj8kpf03AT5Idr3coc0bt7yczjatOaootj55t3Nj3ne6c4Sfek.r1w1YwwojigOd6vrfUrbz2.2bkAnbhzgv4R9i05zEcrop.wAgnb.SqoU65fPa1otfb7wEm24k6t3sR9zqe5fy89n6Nd5t9kc4fE905gmc4Rgxo5nhDk!gr"
+f <- unlist(str_extract_all(secret_message,"[A-Z]"))
+f
+```
+
+The secret message is "CONGRATULATIONS YOU ARE A SUPER NERD."
+
+
+
